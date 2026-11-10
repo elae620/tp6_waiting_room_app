@@ -158,11 +158,7 @@ class LocalQueueService {
   /// est gérée séparément par [QueueProvider.removeClient].
   Future<void> deleteClient(String id) async {
     final db = await database;
-    await db.delete(
-      tableName,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
   }
 
   /// Ferme la connexion à la base de données et réinitialise le singleton.

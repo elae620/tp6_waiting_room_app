@@ -52,7 +52,9 @@ class GeolocationService {
       debugPrint('GEO: Service GPS activé = $enabled');
 
       if (!enabled) {
-        debugPrint('GEO ERROR: GPS désactivé. Activer les services de localisation.');
+        debugPrint(
+          'GEO ERROR: GPS désactivé. Activer les services de localisation.',
+        );
         return null;
       }
 
@@ -72,11 +74,15 @@ class GeolocationService {
       }
 
       if (permission == LocationPermission.deniedForever) {
-        debugPrint('GEO ERROR: Permission refusée définitivement. Aller dans les paramètres.');
+        debugPrint(
+          'GEO ERROR: Permission refusée définitivement. Aller dans les paramètres.',
+        );
         return null;
       }
 
-      debugPrint('GEO: Permission OK ($permission). Récupération de la position...');
+      debugPrint(
+        'GEO: Permission OK ($permission). Récupération de la position...',
+      );
 
       // ── Étape 3 : Essai avec la dernière position connue (rapide) ────────
       // Très utile sur émulateur Android : si une position a déjà été injectée,
@@ -101,7 +107,9 @@ class GeolocationService {
       // ce qui est nécessaire sur émulateur Android Studio avec signal GPS injecté.
       // LocationAccuracy.medium utilise le network provider qui ne fonctionne
       // pas sur émulateur sans accès à une vraie antenne réseau.
-      debugPrint('GEO: Tentative getCurrentPosition (GPS provider, accuracy=high)...');
+      debugPrint(
+        'GEO: Tentative getCurrentPosition (GPS provider, accuracy=high)...',
+      );
 
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,

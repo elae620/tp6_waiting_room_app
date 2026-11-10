@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'queue_provider.dart';
 import 'waiting_room_app.dart';
+import 'services/connectivity_service.dart';
+import 'providers/connectivity_provider.dart';
 
 /// Point d'entrée de l'application **Waiting Room App** (TP5 Flutter).
 ///
@@ -34,8 +36,15 @@ Future<void> main() async {
   }
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => QueueProvider()..initialize(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => QueueProvider()..initialize()),
+        ChangeNotifierProvider(
+          create: (_) => ConnectivityProvider(
+            ConnectivityService(Supabase.instance.client),
+          )..initialize(),
+        ),
+      ],
       child: const WaitingRoomApp(),
     ),
   );

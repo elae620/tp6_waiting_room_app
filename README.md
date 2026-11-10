@@ -1,4 +1,4 @@
-# Waiting Room App – TP5 Flutter
+# Waiting Room App – TP6 Flutter
 
 > Application Flutter de salle d'attente avec **géolocalisation GPS**, persistance locale **SQLite**, synchronisation temps réel **Supabase** et gestion d'état via **Provider**.
 
@@ -151,8 +151,8 @@ waiting_room_app/
 ### 2. Cloner le dépôt
 
 ```bash
-git clone https://github.com/elae620/TP5_WaitingRoomApp.git
-cd TP5_WaitingRoomApp
+git clone https://github.com/elae620/tp6_waiting_room_app.git
+cd tp6_waiting_room_app
 ```
 
 ### 3. Configurer Supabase
@@ -328,6 +328,6 @@ Chaque fichier Dart est documenté avec des commentaires **dartdoc** (`///`).
 
 ## Dépôt
 
-[TP5_WaitingRoomApp sur GitHub](https://github.com/elae620/TP5_WaitingRoomApp)
+[tp6_waiting_room_app sur GitHub](https://github.com/elae620/tp6_waiting_room_app)
 
-Workshop 5 Flutter — Géolocalisation GPS + SQLite offline-first + Supabase temps réel
+Workshop 6 Flutter — Géolocalisation GPS + SQLite offline-first + Supabase temps réel
