@@ -1,181 +1,166 @@
+# AI — Utilisation de l'intelligence artificielle
 
-## 1. Informations générales
+## Informations générales
 
-- **Projet :** `waiting_room_app` — application Flutter de gestion d’une salle d’attente.
-- **Sujet du TP :** connecter l’application Flutter à Supabase pour gérer les clients et synchroniser les changements.
+- **Projet :** `waiting_room_app` — application Flutter de gestion d'une salle d'attente.
+- **TP :** TP6 — Géolocalisation, persistance locale, fonctionnement hors ligne, synchronisation et gestion avancée de la file d'attente.
 - **Agent IA utilisé :** ChatGPT (GPT-6).
 - **Langue des échanges :** principalement français.
-- **Méthode de travail :** progression étape par étape, vérification de l’état du projet, partage du code existant, puis correction et explication avant de passer à la suite.
+- **Méthode de travail :** accompagnement étape par étape, analyse du code existant, proposition de modifications, explications et correction des erreurs.
 
-## 2. Objectif du travail
+## Objectif de l'utilisation de l'IA
 
-L’objectif était de faire évoluer l’application Flutter existante, qui gérait une liste de clients avec un `ChangeNotifier`, afin de la connecter à une base de données Supabase. Le travail devait notamment permettre d’initialiser Supabase, de gérer les clients et de préparer la synchronisation des changements en temps réel.
+ChatGPT a été utilisé comme assistant pédagogique pour accompagner la réalisation du TP6. Il a aidé à comprendre les fonctionnalités demandées, à adapter le code existant et à résoudre les difficultés rencontrées pendant le développement.
 
-## 3. Démarche de travail suivie
+L'objectif était de faire évoluer l'application Waiting Room sans recommencer le projet depuis zéro.
 
-### Étape 1 — Préparer Supabase
+## Principales fonctionnalités réalisées
 
-Le travail a commencé par la configuration du projet Supabase et de la table `clients`.
+- Intégration de la géolocalisation GPS.
+- Surveillance de la connexion Internet.
+- Persistance locale des clients avec SQLite.
+- Synchronisation des données locales avec Supabase.
+- Fonctionnement hors ligne avec synchronisation au retour d'Internet.
+- Gestion des états de l'application avec Provider et ChangeNotifier.
+- Réception des changements en temps réel avec Supabase Realtime.
+- Pagination de la liste des clients.
 
-Les actions effectuées par l’étudiante avant la configuration Flutter :
+## Nature de l'assistance fournie
 
-1. Créer/configurer la table `clients`.
-2. Activer la sécurité au niveau des lignes (**RLS**).
-3. Configurer les politiques nécessaires pour les opérations **SELECT**, **INSERT** et **DELETE**.
-4. Activer **Realtime** pour la table.
+L'IA a aidé à :
 
-L’étudiante a indiqué que cette partie était terminée avant de commencer l’intégration dans Flutter.
+- Examiner les fichiers existants avant modification.
+- Proposer du code complet et corrigé pour certains fichiers Dart.
+- Expliquer les classes, méthodes et services utilisés.
+- Adapter les nouvelles fonctionnalités à l'architecture existante.
+- Identifier et corriger les erreurs rencontrées.
+- Proposer des commandes de vérification : `dart format`, `flutter analyze` et `flutter test`.
+- Guider les tests pratiques de l'application.
 
-### Étape 2 — Examiner le projet Flutter existant
+## Résultat
 
-Avant de modifier l’application, le code existant a été partagé afin de conserver la structure du projet et de comprendre le fonctionnement du gestionnaire de file d’attente.
+Les modifications ont été intégrées au projet et les vérifications ont été effectuées.
 
-Le fichier `queue_provider.dart` contenait notamment :
+Tous les tests réalisés ont réussi, notamment les tests de fonctionnement hors ligne, de synchronisation, de gestion des clients et de pagination.
 
-```dart
-import 'package:flutter/foundation.dart';
+ Questions et demandes formulées pendant l'accompagnement
 
-class QueueProvider extends ChangeNotifier {
-  final List<String> _clients = [];
+Les principales demandes adressées à ChatGPT étaient :
 
-  List<String> get clients => _clients;
+Aider à réaliser le TP Flutter étape par étape.
 
-  void addClient(String name) {
-    _clients.add(name);
-    notifyListeners();
-  }
+Examiner les fichiers existants avant de proposer des modifications.
 
-  void removeClient(String name) {
-    _clients.remove(name);
-    notifyListeners();
-  }
+Fournir le code complet corrigé de QueueProvider.
 
-  void nextClient() {
-    if (_clients.isNotEmpty) {
-      _clients.removeAt(0);
-      notifyListeners();
-    }
-  }
-}
-```
+Adapter le code de l'interface waiting_room_app.dart.
 
-Cette version gérait les clients uniquement en mémoire : la liste était locale à l’application et les méthodes appelaient `notifyListeners()` pour actualiser l’interface. L’intégration de Supabase devait faire évoluer cette logique pour enregistrer et récupérer les données à distance.
+Expliquer comment intégrer la pagination.
 
-### Étape 3 — Vérifier les dépendances
+Vérifier les modifications avec flutter analyze.
 
-Le fichier `pubspec.yaml` a été examiné et les dépendances ont été installées avec :
+Expliquer les erreurs rencontrées pendant les tests.
 
-```bash
-flutter pub get
-```
+Corriger le fonctionnement de l'ajout en mode hors ligne.
 
-Le projet utilisait notamment les packages suivants :
+Conserver les fonctionnalités déjà réalisées sans recommencer le projet.
 
-- `provider` pour partager l’état de la file d’attente ;
-- `flutter_dotenv` pour charger les variables de configuration depuis un fichier `.env` ;
-- `supabase_flutter` pour communiquer avec Supabase.
+L'accompagnement a été réalisé progressivement, en tenant compte des résultats fournis après chaque étape.
 
-Après la commande, Flutter a signalé que certaines dépendances avaient des versions plus récentes incompatibles avec les contraintes actuelles. Il n’était pas nécessaire de mettre à jour toutes ces dépendances pour continuer le TP.
+6. Difficultés rencontrées
 
-### Étape 4 — Configurer les variables d’environnement
+Erreur de connexion Supabase en mode hors ligne
 
-La configuration Supabase devait être placée dans un fichier `.env` à la racine du projet, avec les valeurs du projet Supabase :
+Pendant le test de l'ajout sans Internet, l'application a affiché :
 
-```dotenv
-SUPABASE_URL=URL_DU_PROJET_SUPABASE
-SUPABASE_ANON_KEY=CLE_PUBLIQUE_ANON
-```
+SocketException: Connection refused
 
-Les valeurs ci-dessus sont des exemples de noms de variables : elles doivent être remplacées par les valeurs réelles du projet. Les clés et secrets ne doivent pas être publiés dans le dépôt Git. Le fichier `.env` doit être ignoré par Git.
+Cette erreur indiquait que la communication avec le serveur distant avait échoué.
 
-### Étape 5 — Initialiser Supabase dans `main.dart`
+La correction a consisté à effectuer d'abord l'enregistrement dans SQLite, puis à lancer la synchronisation Supabase en arrière-plan.
 
-Le fichier principal devait charger le fichier `.env`, vérifier que les variables nécessaires étaient présentes, initialiser Supabase, puis lancer l’application en fournissant `QueueProvider` avec `ChangeNotifierProvider`.
+Dépendance entre GPS et ajout d'un client
 
-La logique générale suivie était :
+La récupération de la position GPS ne devait pas empêcher l'ajout d'un client lorsque la position était indisponible.
 
-1. Charger les variables d’environnement avec `dotenv`.
-2. Lire `SUPABASE_URL` et `SUPABASE_ANON_KEY`.
-3. Initialiser Supabase avec `Supabase.initialize(...)`.
-4. Lancer l’application Flutter.
-5. Fournir `QueueProvider` à l’arbre des widgets avec Provider.
+Une correction a été apportée pour gérer séparément les erreurs GPS et conserver la possibilité d'enregistrer le client localement.
 
-La structure de Provider utilisée dans le projet était de la forme :
+Adaptation de la pagination
 
-```dart
-ChangeNotifierProvider(
-  create: (context) => QueueProvider(),
-)
-```
+La pagination devait être adaptée à l'architecture existante, qui utilise SQLite et Supabase directement dans QueueProvider.
 
-### Étape 6 — Préparer l’adaptation du Provider et de l’interface
+Une logique de pagination locale a donc été mise en place, avec un chargement initial de 20 clients et un chargement supplémentaire lors du défilement.
 
-La suite du travail consistait à remplacer progressivement la gestion uniquement locale par des opérations Supabase. Les points abordés dans la démarche étaient :
+Précautions prises
 
-- représenter un client avec les champs utiles de la table, notamment `id`, `name` et `created_at` ;
-- récupérer les clients depuis Supabase ;
-- ajouter et supprimer un client dans la base ;
-- faire passer au client suivant en retirant le premier élément de la file ;
-- actualiser l’interface après les opérations ;
-- préparer l’écoute des changements Realtime pour synchroniser la liste.
+Conserver les fonctionnalités déjà terminées.
 
-L’interface devait également conserver un `TextEditingController` durable, plutôt que d’en créer un à chaque reconstruction du widget. Les opérations asynchrones devaient être traitées avec `async`/`await`.
+Maintenir la cohérence entre les colonnes SQLite et Supabase.
 
-**Point important :** le code initial de `QueueProvider` ci-dessus est celui partagé pendant l’échange. Il illustre l’état de départ, et non une version finale entièrement connectée à Supabase.
+Séparer l'enregistrement local de la synchronisation distante.
 
-### Étape 7 — Vérifier progressivement le fonctionnement
+Éviter les doublons pendant la synchronisation et les événements Realtime.
 
-La méthode de vérification retenue était de procéder par petites étapes :
+Vérifier les modifications avec les outils Flutter.
 
-1. Vérifier que les dépendances s’installent correctement.
-2. Vérifier que l’application initialise Supabase sans erreur.
-3. Vérifier la lecture et l’ajout des clients.
-4. Vérifier la suppression et le passage au client suivant.
-5. Vérifier que les changements sont répercutés dans l’interface.
-6. Tester la synchronisation Realtime, idéalement depuis deux instances/appareils lorsque l’environnement le permet.
+7. Vérifications et résultats des tests
 
-Les erreurs ou le code observés à chaque étape servent à déterminer la correction suivante, plutôt que de modifier plusieurs parties du projet simultanément.
+Les commandes utilisées pour contrôler le projet sont :
 
-## 4. Questions et demandes formulées pendant l’accompagnement
+dart format lib/queue_provider.dart
+dart format lib/waiting_room_app.dart
+flutter analyze
+flutter test
+flutter run
 
-Les demandes principales de l’étudiante étaient les suivantes :
+Résultat global : tous les tests réalisés ont réussi.
 
-- Aider à réaliser le TP Flutter/Supabase pas à pas.
-- Confirmer la suite du travail après avoir terminé la table `clients`, RLS, les politiques et Realtime dans Supabase.
-- Examiner les dépendances après `flutter pub get`.
-- Fournir une version complète et corrigée du `pubspec.yaml`.
-- Fournir le code complet de `main.dart` pour configurer Supabase.
-- Prendre en compte le `QueueProvider` existant et expliquer comment poursuivre l’intégration.
+Les vérifications ont notamment couvert :
 
-L’accompagnement a été organisé autour du projet existant, plutôt que de recommencer l’application depuis zéro.
+Le démarrage de l'application.
 
-## 5. Concepts appris ou mobilisés
+L'ajout d'un client avec Internet.
 
-- **Flutter :** structure de l’application et widgets.
-- **Provider / ChangeNotifier :** partage de l’état et notification des changements à l’interface.
-- **Supabase :** base de données distante et opérations CRUD.
-- **RLS :** contrôle des opérations autorisées sur les lignes de la table.
-- **Variables d’environnement :** séparation de la configuration du code source.
-- **Programmation asynchrone :** utilisation de `async` et `await` pour les opérations réseau.
-- **Realtime :** réception des changements de données pour maintenir plusieurs vues synchronisées.
-- **Débogage progressif :** tester chaque étape et corriger à partir des erreurs réellement observées.
+L'enregistrement et la récupération des données.
 
-## 6. Difficultés et précautions
+La suppression d'un client.
 
-- Il faut conserver la cohérence entre les noms des colonnes dans Supabase et les champs utilisés dans le code.
-- Une liste gérée seulement en mémoire ne persiste pas après la fermeture de l’application ; la base Supabase doit devenir la source de données.
-- Les opérations réseau peuvent échouer : l’interface doit éviter de présenter une opération comme réussie avant que la requête soit terminée.
-- Les règles RLS doivent autoriser les opérations attendues. Elles ne doivent pas être désactivées simplement pour faire disparaître une erreur.
-- Le fichier `.env` contenant les paramètres du projet ne doit pas être ajouté au dépôt Git.
-- Les versions plus récentes des packages ne doivent pas être installées automatiquement sans vérifier leur compatibilité avec le TP.
+Le passage au client suivant avec Next Client.
 
-## 7. Bilan
+L'ajout d'un client sans connexion Internet.
 
-Le travail a suivi une démarche progressive : préparation de la base Supabase, examen du code Flutter existant, installation des dépendances, configuration des variables d’environnement, initialisation de Supabase et préparation de l’adaptation du Provider et de l’interface.
+La conservation du client dans SQLite en mode hors ligne.
 
-Cette démarche permet de comprendre le rôle de chaque partie et de localiser plus facilement les erreurs. Les tests de lecture, d’ajout, de suppression et de synchronisation doivent servir à valider le résultat final dans l’environnement de développement.
+La synchronisation du client après le retour d'Internet.
 
-## 8. Transparence sur l’utilisation de l’IA
+Le chargement progressif des clients avec la pagination.
 
-ChatGPT (GPT-6) a été utilisé comme assistant pédagogique pour expliquer les étapes, examiner le code fourni, proposer des corrections et guider le débogage.
-"""
+La gestion des changements Realtime et la prévention des doublons.
+
+La commande flutter analyze a également indiqué :
+
+No issues found!
+
+Les tests automatisés exécutés avec flutter test ont réussi.
+
+8. Concepts appris ou mobilisés
+
+Flutter : développement d'une application multiplateforme.
+
+Provider / ChangeNotifier : gestion et partage de l'état.
+
+SQLite : stockage local et persistance des données.
+
+Supabase : base de données distante et synchronisation.
+
+connectivity_plus : surveillance de la connectivité réseau.
+
+Géolocalisation : récupération de la latitude et de la longitude.
+
+Programmation asynchrone : utilisation de async, await et Future.
+
+Realtime : réception des changements distants.
+
+Pagination : chargement progressif des données.
+
+Débogage : analyse des erreurs et vérification progressive du code.
